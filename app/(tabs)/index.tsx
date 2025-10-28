@@ -1,62 +1,54 @@
-import Directory from "@/components/Directory";
-import SearchBar from "@/components/SearchBar";
-import { Text, View } from "@/components/Themed";
-import UserDetails from "@/components/UserDetails";
-import { useState } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { SafeAreaView, StyleSheet, TextInput } from "react-native";
+import Directory from "../../components/Directory";
+import MemberDetails from "../../components/MemberDetails";
 
-export default function TabOneScreen() {
+export default function Index() {
   const [displayMemberDetails, setDisplayMemberDetails] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        {!displayMemberDetails ? (
-          <>
-            <Text style={styles.title}>Directory</Text>
-            <View
-              style={styles.separator}
-              lightColor="#eee"
-              darkColor="rgba(255,255,255,0.1)"
-            />
-            <SearchBar
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-            />
-            <Directory
-              path="app/(tabs)/index.tsx"
-              setDisplayMemberDetails={setDisplayMemberDetails}
-              setSelectedUser={setSelectedUser}
-              searchQuery={searchQuery}
-            />
-          </>
-        ) : (
-          <UserDetails
-            user={selectedUser}
-            onBack={() => setDisplayMemberDetails(false)}
-          />
-        )}
-      </View>
-    </ScrollView>
+    <SafeAreaView style={styles.container}>
+      {!displayMemberDetails && (
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search members..."
+          placeholderTextColor="#888"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      )}
+
+      {!displayMemberDetails ? (
+        <Directory
+          path=""
+          setDisplayMemberDetails={setDisplayMemberDetails}
+          setSelectedUser={setSelectedUser}
+          searchQuery={searchQuery}
+        />
+      ) : (
+        <MemberDetails
+          selectedUser={selectedUser}
+          setDisplayMemberDetails={setDisplayMemberDetails}
+        />
+      )}
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    paddingTop: 20,
+    backgroundColor: "#0A0A0A",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
+  searchInput: {
+    height: 50,
+    margin: 10,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    backgroundColor: "#1C1C1C",
+    color: "#fff",
+    fontSize: 16,
   },
 });

@@ -1,6 +1,12 @@
-import React from "react";
-import { StyleSheet, View } from "react-native";
-import UserBlock from "./UserBlock";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import UserBlock from "../components/UserBlock";
 
 interface DirectoryProps {
   path: string;
@@ -15,39 +21,76 @@ export default function Directory({
   setSelectedUser,
   searchQuery,
 }: DirectoryProps) {
-  const users = require("../app/users.json");
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Filter users by first or last name
-  const filteredUsers = users.filter((user: any) => {
+  useEffect(() => {
+    fetch(
+      "https://raw.githubusercontent.com/izziepolania0/FHU-social-club/main/sample_people_50_v4_with_id.json"
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setUsers(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching users:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const filteredUsers = users.filter((user) => {
     const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
     return fullName.includes(searchQuery.toLowerCase());
   });
 
+  if (loading) {
+    return (
+      <View style={[styles.listContainer, { justifyContent: "center" }]}>
+        <ActivityIndicator size="large" color="#5B5BFF" />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.listContainer}>
-      {filteredUsers.map((user: any) => (
-        <UserBlock
-          key={user.id}
-          firstName={user.firstName}
-          lastName={user.lastName}
-          classification={user.classification}
-          relationshipStatus={user.relationshipStatus}
-          onPressUserBlock={(selectedUser) => {
-            setSelectedUser(selectedUser);
-            setDisplayMemberDetails(true);
-          }}
-        />
-      ))}
-    </View>
+    <ScrollView contentContainerStyle={styles.listContainer}>
+      {filteredUsers.length === 0 ? (
+        <Text style={styles.noResults}>No members found 😕</Text>
+      ) : (
+        filteredUsers.map((user) => (
+          <UserBlock
+            key={user.id}
+            firstName={user.firstName}
+            lastName={user.lastName}
+            classification={user.classification}
+            relationshipStatus={user.relationshipStatus}
+            imageURL={user.imageURL}
+            officer={user.officer}
+            onPressUserBlock={() => {
+              setSelectedUser(user);
+              setDisplayMemberDetails(true);
+            }}
+          />
+        ))
+      )}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   listContainer: {
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    width: "100%",
-    paddingVertical: 10,
+    padding: 20,
+    backgroundColor: "#0A0A0A",
+    flexGrow: 1,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 15,
+  },
+  noResults: {
+    color: "#ccc",
+    fontSize: 18,
+    textAlign: "center",
+    marginTop: 50,
   },
 });
