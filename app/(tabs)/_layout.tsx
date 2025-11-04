@@ -2,6 +2,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
 import React from "react";
 
+import Protected from "@/components/Protected";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import { useColorScheme } from "@/components/useColorScheme";
 import Colors from "@/constants/Colors";
@@ -17,21 +18,22 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-
-        headerShown: useClientOnlyValue(false, true),
-      }}
-    >
-      <Tabs.Screen name="index" />
-      <Tabs.Screen
-        name="two"
-        options={{
-          title: "Tab Two",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+    <Protected>
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+          headerShown: useClientOnlyValue(false, true),
         }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen name="index" />
+        <Tabs.Screen
+          name="two"
+          options={{
+            title: "Tab Two",
+            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          }}
+        />
+      </Tabs>
+    </Protected>
   );
 }
