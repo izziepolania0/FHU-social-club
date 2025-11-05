@@ -1,4 +1,3 @@
-// context/AuthProvider.tsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { account } from "../lib/appwrite";
 
