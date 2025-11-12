@@ -13,7 +13,16 @@ export default function ModalScreen() {
         lightColor="#eee"
         darkColor="rgba(255,255,255,0.1)"
       />
-      <EditScreenInfo path="app/modal.tsx" />
+      <EditScreenInfo
+        path="app/modal.tsx"
+        setDisplayMemberDetails={function (value: boolean): void {
+          throw new Error("Function not implemented.");
+        }}
+        setSelectedUser={function (user: any): void {
+          throw new Error("Function not implemented.");
+        }}
+        searchQuery={""}
+      />
 
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />

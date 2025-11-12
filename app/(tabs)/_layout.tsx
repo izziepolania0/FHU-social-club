@@ -25,7 +25,15 @@ export default function TabLayout() {
           headerShown: useClientOnlyValue(false, true),
         }}
       >
-        <Tabs.Screen name="index" />
+        <Tabs.Screen
+          name="MemberDirectory"
+          options={{
+            title: "Directory",
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="users" color={color} />
+            ),
+          }}
+        />
         <Tabs.Screen
           name="two"
           options={{

@@ -1,16 +1,62 @@
-import { Account, Client, Databases, ID } from "appwrite";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import React, { useEffect } from "react";
+import "react-native-reanimated";
 
-export const APPWRITE_ENDPOINT = "https://nyc.cloud.appwrite.io/v1";
-export const APPWRITE_PROJECT_ID = "68f8ec9800385106a81d";
+import { useColorScheme } from "@/components/useColorScheme";
+import AuthProvider from "./context/AuthProvider";
 
-export const DB_ID = "690a8ea6000d6e3edbac";
-export const EVENTS_COLLECTION_ID = "public_events";
+export { ErrorBoundary } from "expo-router";
 
-const client = new Client()
-  .setEndpoint(APPWRITE_ENDPOINT)
-  .setProject(APPWRITE_PROJECT_ID);
+export const unstable_settings = {
+  initialRouteName: "(tabs)",
+};
 
-export const account = new Account(client);
-export const databases = new Databases(client);
-export { ID };
-export default client;
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
+
+export default function RootLayout() {
+  const [loaded, error] = useFonts({
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    ...FontAwesome.font,
+  });
+
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) return null;
+
+  return <RootLayoutNav />;
+}
+
+function RootLayoutNav() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <AuthProvider>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack>
+          {/* Public route /}
+          <Stack.Screen name="login" options={{ headerShown: false }} />
+          {/ Protected tabs group (gated inside its own _layout) */}
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+        </Stack>
+      </ThemeProvider>
+    </AuthProvider>
+  );
+}
